@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "baseUrl": ".",
+    "paths": {},
+    "moduleResolution": "node",
+    "noEmitOnError": false,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "pretty": true,
+    "removeComments": true,
+    "declaration": true,
+    "outDir": "build/",
+    "sourceMap": true,
+    "inlineSourceMap": false
+  },
+  "include": ["src/**/*"]
+}
