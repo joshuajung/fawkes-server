@@ -49,7 +49,11 @@ export default class DateTime implements AdvancedData {
     } else return new DateTime(null, undefined, options)
   }
   toDb(): string {
-    return this.isNil() ? null : this.toIso()
+    if (this.isNil()) return null
+    else {
+      const isoString = this.toIso()
+      return isoString.substr(0, 10) + " " + isoString.substr(11, 8)
+    }
   }
 
   static fromJsonValue(jsonDate: string, options?: DateTimeOptions): DateTime {

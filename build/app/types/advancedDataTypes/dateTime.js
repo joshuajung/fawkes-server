@@ -30,7 +30,12 @@ class DateTime {
             return new DateTime(null, undefined, options);
     }
     toDb() {
-        return this.isNil() ? null : this.toIso();
+        if (this.isNil())
+            return null;
+        else {
+            const isoString = this.toIso();
+            return isoString.substr(0, 10) + " " + isoString.substr(11, 8);
+        }
     }
     static fromJsonValue(jsonDate, options) {
         if (!lodash_1.isNil(jsonDate))
