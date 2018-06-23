@@ -28,18 +28,19 @@ class Scheduler {
         }, 5000);
     }
     runRequiredJobs() {
-        this.jobs.forEach(job => {
-            const jobEverRan = job.lastStart !== null;
-            if (!jobEverRan) {
-                this.runJob(job);
-            }
-            const jobIsRunning = job.lastCompletion === null || job.lastCompletion < job.lastStart;
-            const secondsSinceLastStart = (Date.now() - job.lastStart.getTime()) / 1000;
-            const jobIsDue = secondsSinceLastStart > job.definition.periodInSeconds;
-            if (!jobIsRunning && jobIsDue) {
-                this.runJob(job);
-            }
-        });
+        this.jobs.forEach(this.runJobIfRequired);
+    }
+    runJobIfRequired(job) {
+        const jobEverRan = job.lastStart !== null;
+        if (!jobEverRan) {
+            this.runJob(job);
+        }
+        const jobIsRunning = job.lastCompletion === null || job.lastCompletion < job.lastStart;
+        const secondsSinceLastStart = (Date.now() - job.lastStart.getTime()) / 1000;
+        const jobIsDue = secondsSinceLastStart > job.definition.periodInSeconds;
+        if (!jobIsRunning && jobIsDue) {
+            this.runJob(job);
+        }
     }
     runJob(job) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -54,6 +55,7 @@ class Scheduler {
             }
             job.lastCompletion = new Date();
             console.log("Scheduler: Completed job '" + job.definition.key + "'.");
+            this.runJobIfRequired(job);
         });
     }
 }

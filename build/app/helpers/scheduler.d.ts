@@ -16,5 +16,6 @@ export declare class Scheduler {
     constructor(app: App, jobDefinitions: Array<ScheduledJobDefinition>);
     stayInLoop(): void;
     runRequiredJobs(): void;
+    runJobIfRequired(job: ScheduledJob): void;
     runJob(job: ScheduledJob): Promise<void>;
 }
