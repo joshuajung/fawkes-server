@@ -19,6 +19,7 @@ const AdvancedData = require("./middleware/advancedData");
 const createPool_1 = require("./database/createPool");
 const moduleLoader_1 = require("./helpers/moduleLoader");
 const scheduler_1 = require("./helpers/scheduler");
+const socket_1 = require("./helpers/socket");
 function App(module) {
     const app = Express();
     app.module = moduleLoader_1.default(module);
@@ -41,6 +42,9 @@ function App(module) {
     app.use(sendHttpError_1.default);
     app.use(catchError_1.default);
     app.scheduler = new scheduler_1.Scheduler(app, module.scheduledJobs || []);
+    let socketManager = new socket_1.SocketManager(app);
+    app.socketManager = socketManager;
+    app.server = socketManager.server;
     return app;
 }
 exports.default = App;

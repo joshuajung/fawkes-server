@@ -24,6 +24,7 @@ import createDatabasePool from "./database/createPool"
 // Helpers
 import moduleLoader from "./helpers/moduleLoader"
 import { Scheduler } from "./helpers/scheduler"
+import { SocketManager } from "./helpers/socket"
 
 export default function App(module: types.Module): types.App {
   // App initialization
@@ -68,6 +69,11 @@ export default function App(module: types.Module): types.App {
 
   // Start job scheduler
   app.scheduler = new Scheduler(app, module.scheduledJobs || [])
+
+  // Initialize Socket manager
+  let socketManager = new SocketManager(app)
+  app.socketManager = socketManager
+  app.server = socketManager.server
 
   return app
 }
