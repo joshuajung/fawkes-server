@@ -271,6 +271,9 @@ exports.checkAndRefreshSession = (app, accessToken) => __awaiter(this, void 0, v
 exports.getUserForSessionToken = (app, accessToken) => __awaiter(this, void 0, void 0, function* () {
     const userQuery = queries_1.default.user.getUserForSessionToken();
     const userQueryResult = yield app.db.execute(userQuery, [accessToken]);
+    const userRecords = userQueryResult[0];
+    if (userRecords.length === 0)
+        return null;
     const userRecord = userQueryResult[0][0];
     const userGroupQuery = queries_1.default.user.getUserGroupsForUserId();
     const userGroupQueryResult = yield app.db.execute(userGroupQuery, [

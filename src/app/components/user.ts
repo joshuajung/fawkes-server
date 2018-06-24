@@ -345,6 +345,9 @@ export const getUserForSessionToken = async (app: App, accessToken: string) => {
   // Get User information
   const userQuery = queries.user.getUserForSessionToken()
   const userQueryResult = await app.db.execute(userQuery, [accessToken])
+  const userRecords = userQueryResult[0]
+  // If no valid session available, return null.
+  if (userRecords.length === 0) return null
   const userRecord = userQueryResult[0][0]
   // Get User Group information
   const userGroupQuery = queries.user.getUserGroupsForUserId()
