@@ -11,7 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = require("http");
 const Io = require("socket.io");
 const userComponent = require("../components/user");
-const cryptoHelper = require("./crypto");
 class SocketManager {
     constructor(app) {
         this.app = app;
@@ -28,7 +27,6 @@ class SocketManager {
     registerListeners(socket) {
         socket.on("disconnect", () => this.unregisterConnection(socket));
         socket.on("authenticate", sessionAccessToken => this.authenticateSocket(socket, sessionAccessToken));
-        socket.on("join", (roomKey) => this.joinRoom(socket, roomKey));
     }
     unregisterConnection(socket) {
         console.log("Unregistered socket connection:");
@@ -62,24 +60,12 @@ class SocketManager {
             }
         });
     }
-    createRoom(gatekeeper) {
-        const roomKey = cryptoHelper.createGuid();
-        this.roomGatekeepers.push({ roomKey, gatekeeper });
-        return roomKey;
-    }
-    joinRoom(socket, roomKey) {
-        const roomGatekeeper = this.roomGatekeepers.find(rg => rg.roomKey == roomKey);
-        if (!roomGatekeeper)
-            throw Error("NO_ROOM_GATEKEEPER");
-        const socketAuthenticationInformation = this.socketAuthenticationInformation.find(sai => sai.sessionAccessToken === socket.id);
-        const sessionAccessToken = socketAuthenticationInformation.socketId || null;
-        const mayJoin = roomGatekeeper.gatekeeper(sessionAccessToken);
-        if (mayJoin) {
-            socket.emit("ROOM_JOINED");
-        }
-        else {
-            socket.emit("NOT_AUTHORIZED");
-        }
+    getSocketsForSession(sessionAccessToken) {
+        const allSockets = this.io.sockets.sockets;
+        const socketsForSession = this.socketAuthenticationInformation
+            .filter(sai => sai.sessionAccessToken === sessionAccessToken)
+            .map(sai => allSockets[sai.socketId]);
+        return socketsForSession;
     }
 }
 exports.SocketManager = SocketManager;

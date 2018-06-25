@@ -14,4 +14,8 @@ exports.error = (app) => __awaiter(this, void 0, void 0, function* () {
 exports.debug = (app) => __awaiter(this, void 0, void 0, function* () {
     debugger;
 });
+exports.getSocketForSession = (app) => __awaiter(this, void 0, void 0, function* () {
+    app.socketManager.getSocketsForSession("dc2227fc9e1a412b77f2312d42d81c2c4728b937c31e7965387cd55cde58f91c");
+    return;
+});
 //# sourceMappingURL=dev.js.map

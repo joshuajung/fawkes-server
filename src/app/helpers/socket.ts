@@ -5,9 +5,6 @@ import * as Io from "socket.io"
 // Internal imports
 import { App } from "../types"
 import * as userComponent from "../components/user"
-import * as cryptoHelper from "./crypto"
-
-export type RoomGatekeeper = (accessToken: string) => boolean
 
 export class SocketManager {
   app: App
@@ -17,7 +14,6 @@ export class SocketManager {
     socketId: string
     sessionAccessToken: string
   }>
-  roomGatekeepers: Array<{ roomKey: string; gatekeeper: RoomGatekeeper }>
 
   constructor(app: App) {
     this.app = app
@@ -39,7 +35,6 @@ export class SocketManager {
     socket.on("authenticate", sessionAccessToken =>
       this.authenticateSocket(socket, sessionAccessToken)
     )
-    socket.on("join", (roomKey: string) => this.joinRoom(socket, roomKey))
   }
 
   unregisterConnection(socket: Io.Socket) {
@@ -85,26 +80,11 @@ export class SocketManager {
     }
   }
 
-  createRoom(gatekeeper: RoomGatekeeper): string {
-    const roomKey = cryptoHelper.createGuid()
-    this.roomGatekeepers.push({ roomKey, gatekeeper })
-    return roomKey
-  }
-
-  joinRoom(socket: Io.Socket, roomKey: string) {
-    const roomGatekeeper = this.roomGatekeepers.find(
-      rg => rg.roomKey == roomKey
-    )
-    if (!roomGatekeeper) throw Error("NO_ROOM_GATEKEEPER")
-    const socketAuthenticationInformation = this.socketAuthenticationInformation.find(
-      sai => sai.sessionAccessToken === socket.id
-    )
-    const sessionAccessToken = socketAuthenticationInformation.socketId || null
-    const mayJoin = roomGatekeeper.gatekeeper(sessionAccessToken)
-    if (mayJoin) {
-      socket.emit("ROOM_JOINED")
-    } else {
-      socket.emit("NOT_AUTHORIZED")
-    }
+  getSocketsForSession(sessionAccessToken: string): Array<Io.Socket> {
+    const allSockets = this.io.sockets.sockets
+    const socketsForSession = this.socketAuthenticationInformation
+      .filter(sai => sai.sessionAccessToken === sessionAccessToken)
+      .map(sai => allSockets[sai.socketId])
+    return socketsForSession
   }
 }

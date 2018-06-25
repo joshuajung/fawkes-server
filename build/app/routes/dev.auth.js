@@ -29,6 +29,10 @@ function setupRoutes(app) {
         req.accessGranted = true;
         next();
     }));
+    app.get("/dev/getSocketForSession", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+        req.accessGranted = true;
+        next();
+    }));
 }
 exports.setupRoutes = setupRoutes;
 //# sourceMappingURL=dev.auth.js.map

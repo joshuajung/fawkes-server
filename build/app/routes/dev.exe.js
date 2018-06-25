@@ -20,7 +20,9 @@ function setupRoutes(app) {
     }));
     app.get("/dev/restricted", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
-            res.status(200).send({ result: "You have reached the restricted area." });
+            res
+                .status(200)
+                .send({ result: "You have reached the restricted area." });
         }
         catch (error) {
             next(error);
@@ -28,7 +30,9 @@ function setupRoutes(app) {
     }));
     app.get("/dev/unauthorized", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
-            res.status(200).send({ result: "You have reached the unauthorized area. That's impossible." });
+            res.status(200).send({
+                result: "You have reached the unauthorized area. That's impossible."
+            });
         }
         catch (error) {
             next(error);
@@ -45,6 +49,14 @@ function setupRoutes(app) {
     app.get("/dev/debug", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
             yield devComponent.debug(app);
+        }
+        catch (error) {
+            next(error);
+        }
+    }));
+    app.get("/dev/getSocketForSession", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield devComponent.getSocketForSession(app);
         }
         catch (error) {
             next(error);
