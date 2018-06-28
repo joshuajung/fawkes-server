@@ -26,7 +26,7 @@ function setupRoutes(app) {
         next();
     }));
     app.get("/dev/debug", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        req.accessGranted = true;
+        req.accessGranted = false;
         next();
     }));
     app.get("/dev/getSocketForSession", (req, res, next) => __awaiter(this, void 0, void 0, function* () {

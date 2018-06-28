@@ -35,7 +35,7 @@ export function setupRoutes(app: types.App) {
   app.get(
     "/dev/debug",
     async (req: types.Request, res: types.Response, next: Function) => {
-      req.accessGranted = true
+      req.accessGranted = false
       next()
     }
   )

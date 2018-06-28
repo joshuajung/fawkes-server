@@ -34,7 +34,7 @@ export interface Module {
     failedLoginAttemptsUntilLock: number
     loginLinkValidity: number
     minPasswordLength: number
-    allowGuestUserCreation: boolean
+    allowAppleIdentifierUserCreation: boolean
     accessTokenHeaderName: string
     accessTokenUrlParamName: string
   }

@@ -2,26 +2,31 @@
 
 // Internal imports
 import * as types from "../types"
-import * as userComponent from "../components/user"
+import * as userCreateComponent from "../components/user/create"
+import * as userExistsComponent from "../components/user/exists"
+import * as userPasswordComponent from "../components/user/password"
+import * as userSessionComponent from "../components/user/session"
+import * as userSettingsComponent from "../components/user/settings"
+import * as userFindComponent from "../components/user/find"
 
 export function setupRoutes(app: types.App): void {
   app.post(
     "/user/createWithEmail",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userComponent.createWithEmail(
+        await userCreateComponent.createWithEmail(
           app,
           req.body["email"].value,
           req.body["password"].value
         )
-        const loginResult = await userComponent.logInWithEmail(
+        const loginResult = await userSessionComponent.logInWithEmail(
           app,
           req.body["email"].value,
           req.body["password"].value
         )
-        const userInfo = await userComponent.getUserForSessionToken(
+        const userInfo = await userFindComponent.getRichUserRecordById(
           app,
-          loginResult.accessToken
+          loginResult.userId
         )
         res.status(201).send({
           code: "USER_CREATED",
@@ -37,7 +42,10 @@ export function setupRoutes(app: types.App): void {
     "/user/exists",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        const result = await userComponent.exists(app, req.body["email"])
+        const result = await userExistsComponent.emailExists(
+          app,
+          req.body["email"]
+        )
         res.status(200).send({ code: "CHECK_SUCCESSFUL", userExists: result })
       } catch (error) {
         next(error)
@@ -48,18 +56,18 @@ export function setupRoutes(app: types.App): void {
     "/user/logInWithEmail",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        const result = await userComponent.logInWithEmail(
+        const loginResult = await userSessionComponent.logInWithEmail(
           app,
           req.body["email"].value,
           req.body["password"].value
         )
-        const userInfo = await userComponent.getUserForSessionToken(
+        const userInfo = await userFindComponent.getRichUserRecordById(
           app,
-          result.accessToken
+          loginResult.userId
         )
         res.status(200).send({
           code: "LOGIN_SUCCESSFUL",
-          accessToken: result.accessToken,
+          accessToken: loginResult.accessToken,
           userInfo: userInfo
         })
       } catch (error) {
@@ -71,17 +79,17 @@ export function setupRoutes(app: types.App): void {
     "/user/logInWithToken",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        const result = await userComponent.logInWithToken(
+        const loginResult = await userSessionComponent.logInWithToken(
           app,
           req.body["token"]
         )
-        const userInfo = await userComponent.getUserForSessionToken(
+        const userInfo = await userFindComponent.getRichUserRecordById(
           app,
-          result.accessToken
+          loginResult.userId
         )
         res.status(200).send({
           code: "LOGIN_SUCCESSFUL",
-          accessToken: result.accessToken,
+          accessToken: loginResult.accessToken,
           userInfo: userInfo
         })
       } catch (error) {
@@ -93,7 +101,7 @@ export function setupRoutes(app: types.App): void {
     "/user/sendLoginLink",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userComponent.sendLoginLink(
+        await userSessionComponent.sendLoginLink(
           app,
           req.body["email"].value,
           req.body["loginLinkBaseUrl"]
@@ -108,7 +116,7 @@ export function setupRoutes(app: types.App): void {
     "/user/logOut",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userComponent.destroySession(app, req.accessToken)
+        await userSessionComponent.destroySession(app, req.accessToken)
         res.status(200).send({ code: "LOGOUT_SUCCESSFUL" })
       } catch (error) {
         next(error)
@@ -119,7 +127,7 @@ export function setupRoutes(app: types.App): void {
     "/user/logOutEverywhere",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userComponent.destroyAllSessions(app, req.userInfo.userId)
+        await userSessionComponent.destroyAllSessions(app, req.userInfo.userId)
         res.status(200).send({ code: "LOGOUT_SUCCESSFUL" })
       } catch (error) {
         next(error)
@@ -130,7 +138,7 @@ export function setupRoutes(app: types.App): void {
     "/user/setNewPasswordWithOldPassword",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userComponent.setNewPasswordWithOldPassword(
+        await userPasswordComponent.setNewPasswordWithOldPassword(
           app,
           req.userInfo.userId,
           req.body["newPassword"].value,
@@ -146,7 +154,7 @@ export function setupRoutes(app: types.App): void {
     "/user/setNewPasswordWithToken",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userComponent.setNewPasswordWithToken(
+        await userPasswordComponent.setNewPasswordWithToken(
           app,
           req.body["token"],
           req.body["newPassword"].value
@@ -161,7 +169,7 @@ export function setupRoutes(app: types.App): void {
     "/user/sendResetPasswordLink",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userComponent.sendResetPasswordLink(
+        await userPasswordComponent.sendResetPasswordLink(
           app,
           req.body["email"].value,
           req.body["resetPasswordLinkBaseUrl"]
@@ -176,8 +184,15 @@ export function setupRoutes(app: types.App): void {
     "/user/setUserSetting",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userComponent.setSettings(app, req.userInfo.userId, req.body)
-        const settings = await userComponent.settings(app, req.userInfo.userId)
+        await userSettingsComponent.setSettings(
+          app,
+          req.userInfo.userId,
+          req.body
+        )
+        const settings = await userSettingsComponent.settings(
+          app,
+          req.userInfo.userId
+        )
         res
           .status(200)
           .send({ code: "USER_SETTINGS_SET", userSettings: settings })
@@ -190,7 +205,10 @@ export function setupRoutes(app: types.App): void {
     "/user/userSettings",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        const settings = await userComponent.settings(app, req.userInfo.userId)
+        const settings = await userSettingsComponent.settings(
+          app,
+          req.userInfo.userId
+        )
         res
           .status(200)
           .send({ code: "USER_SETTINGS_ATTACHED", userSettings: settings })

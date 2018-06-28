@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = require("http");
 const Io = require("socket.io");
-const userComponent = require("../components/user");
+const userSessionComponent = require("../components/user/session");
 class SocketManager {
     constructor(app) {
         this.app = app;
@@ -35,7 +35,7 @@ class SocketManager {
     }
     authenticateSocket(socket, sessionAccessToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sessionIsValid = yield userComponent.checkAndRefreshSession(this.app, sessionAccessToken);
+            const sessionIsValid = yield userSessionComponent.checkAndRefreshSession(this.app, sessionAccessToken);
             if (sessionIsValid) {
                 const existingIndex = this.socketAuthenticationInformation.findIndex(i => i.socketId === socket.id);
                 if (existingIndex !== -1) {

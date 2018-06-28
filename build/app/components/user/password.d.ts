@@ -1,0 +1,13 @@
+import { App } from "../../types";
+export declare const setNewPasswordWithOldPassword: (app: App, userId: string, passwordNew: string, passwordOld: string) => Promise<void>;
+export declare const setNewPasswordWithToken: (app: App, token: string, passwordNew: string) => Promise<void>;
+export declare const sendResetPasswordLink: (app: App, email: string, resetPasswordLinkBaseUrl: string) => Promise<void>;
+export declare const setNewPassword: (app: App, userId: string, newPassword: string) => Promise<void>;
+export declare const setPasswordResetToken: (app: App, userId: string) => Promise<string>;
+export declare const voidPasswordResetToken: (app: App, userId: string) => Promise<void>;
+export declare const userIsLocked: (app: App, userId: string) => Promise<any>;
+export declare const userHasPassword: (app: App, userId: string) => Promise<boolean>;
+export declare const verifyUserPassword: (app: App, userId: string, passwordToVerify: any) => Promise<boolean>;
+export declare const increaseNumberOfFailedLoginAttempts: (app: App, userId: string) => Promise<void>;
+export declare const lockUserIfRequired: (app: App, userId: string) => Promise<boolean>;
+export declare const resetLoginLock: (app: App, userId: string) => Promise<void>;

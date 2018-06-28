@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userComponent = require("../components/user");
+const userSessionComponent = require("../components/user/session");
 function RefreshSession(app) {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
@@ -17,7 +17,7 @@ function RefreshSession(app) {
                 next();
             }
             else {
-                const accessTokenValid = yield userComponent.checkAndRefreshSession(app, req.accessToken);
+                const accessTokenValid = yield userSessionComponent.checkAndRefreshSession(app, req.accessToken);
                 if (accessTokenValid === false) {
                     req.accessTokenIsInvalid = true;
                     next();

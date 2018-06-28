@@ -5,11 +5,15 @@
 const queries = {
   user: {
     getUserByEmail: () => "SELECT * FROM users WHERE email=?",
+    getUserByAppleIdentifier: () =>
+      "SELECT * FROM users WHERE appleIdentifier=?",
     getUserById: () => "SELECT * FROM users WHERE id=?",
     getUserByResetPasswordToken: () =>
       "SELECT * FROM users WHERE resetPasswordToken=?",
     getUserByLoginToken: () => "SELECT * FROM users WHERE loginToken=?",
     createUser: () => "INSERT INTO users SET id=?, email=?, password=?",
+    createUserWithAppleIdentifier: () =>
+      "INSERT INTO users SET id=?, appleIdentifier=?",
     createSession: (tokenTimeoutSanitized: number) =>
       "INSERT INTO sessions SET token=?, user=?, expires=DATE_ADD(NOW(), INTERVAL " +
       tokenTimeoutSanitized +

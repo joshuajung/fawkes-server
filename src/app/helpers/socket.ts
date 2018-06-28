@@ -4,7 +4,7 @@ import * as Io from "socket.io"
 
 // Internal imports
 import { App } from "../types"
-import * as userComponent from "../components/user"
+import * as userSessionComponent from "../components/user/session"
 
 export class SocketManager {
   app: App
@@ -47,7 +47,7 @@ export class SocketManager {
 
   async authenticateSocket(socket: Io.Socket, sessionAccessToken) {
     // Check if session ID is valid and get user info
-    const sessionIsValid = await userComponent.checkAndRefreshSession(
+    const sessionIsValid = await userSessionComponent.checkAndRefreshSession(
       this.app,
       sessionAccessToken
     )

@@ -2,7 +2,7 @@
 
 // Internal imports
 import * as types from "../types"
-import * as userComponent from "../components/user"
+import * as userSessionComponent from "../components/user/session"
 
 export default function RefreshSession(app: types.App): any {
   return async (req: types.Request, res: types.Response, next: any) => {
@@ -12,7 +12,7 @@ export default function RefreshSession(app: types.App): any {
         next()
       } else {
         // Refresh access token
-        const accessTokenValid = await userComponent.checkAndRefreshSession(
+        const accessTokenValid = await userSessionComponent.checkAndRefreshSession(
           app,
           req.accessToken
         )

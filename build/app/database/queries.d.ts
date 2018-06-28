@@ -1,10 +1,12 @@
 declare const queries: {
     user: {
         getUserByEmail: () => string;
+        getUserByAppleIdentifier: () => string;
         getUserById: () => string;
         getUserByResetPasswordToken: () => string;
         getUserByLoginToken: () => string;
         createUser: () => string;
+        createUserWithAppleIdentifier: () => string;
         createSession: (tokenTimeoutSanitized: number) => string;
         refreshSession: (tokenTimeoutSanitized: number) => string;
         deleteSession: () => string;

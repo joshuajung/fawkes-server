@@ -8,12 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userComponent = require("../components/user");
+const findUserComponent = require("../components/user/find");
 function AddUserInformation(app) {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
             if (req.accessTokenIsAvailable && !req.accessTokenIsInvalid) {
-                req.userInfo = yield userComponent.getUserForSessionToken(app, req.accessToken);
+                const userId = yield findUserComponent.findByAccessToken(app, req.accessToken);
+                req.userInfo = yield findUserComponent.getRichUserRecordById(app, userId);
             }
             next();
         }
