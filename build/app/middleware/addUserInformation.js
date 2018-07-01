@@ -13,8 +13,8 @@ function AddUserInformation(app) {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
             if (req.accessTokenIsAvailable && !req.accessTokenIsInvalid) {
-                const userId = yield findUserComponent.findByAccessToken(app, req.accessToken);
-                req.userInfo = yield findUserComponent.getRichUserRecordById(app, userId);
+                const user = yield findUserComponent.findByAccessToken(app, req.accessToken);
+                req.userInfo = yield findUserComponent.getRichUserRecordById(app, user.id);
             }
             next();
         }

@@ -15,6 +15,8 @@ const validateHelper = require("../../helpers/validate");
 exports.setSetting = (app, userId, settingKey, settingValue) => __awaiter(this, void 0, void 0, function* () {
     if (!validateHelper.isString(settingKey))
         throw Error("INVALID_INPUT");
+    if (!validateHelper.isAdvancedData(settingValue))
+        throw Error("INVALID_INPUT");
     yield app.db.execute(queries_1.default.user.setUserSetting(), [
         cryptoHelper.createGuid(),
         userId,
@@ -24,6 +26,8 @@ exports.setSetting = (app, userId, settingKey, settingValue) => __awaiter(this, 
     ]);
 });
 exports.setSettings = (app, userId, settings) => __awaiter(this, void 0, void 0, function* () {
+    if (!validateHelper.isArray(settings))
+        throw Error("INVALID_INPUT");
     yield Promise.all(settings.map((setting) => __awaiter(this, void 0, void 0, function* () {
         return exports.setSetting(app, userId, setting.settingKey, setting.settingValue);
     })));

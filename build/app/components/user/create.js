@@ -42,7 +42,10 @@ exports.createWithAppleIdentifier = (app, appleIdentifier) => __awaiter(this, vo
     if (userExists)
         throw Error("EMAIL_IN_USE");
     const userId = exports.createUserId();
-    yield app.db.execute(queries_1.default.user.createUser(), [userId, appleIdentifier]);
+    yield app.db.execute(queries_1.default.user.createUserWithAppleIdentifier(), [
+        userId,
+        appleIdentifier
+    ]);
     return userId;
 });
 //# sourceMappingURL=create.js.map

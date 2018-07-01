@@ -164,8 +164,8 @@ export const lockUserIfRequired = async (app: App, userId: string) => {
   const lockResult = await app.db.execute(
     queries.user.lockUserLoginByUserId(app.module.user.loginLockTimeout),
     [userRecord.id, app.module.user.failedLoginAttemptsUntilLock]
-  )[0]
-  const userLocked = lockResult.affectedRows > 0 ? true : false
+  )
+  const userLocked = lockResult[0].affectedRows > 0 ? true : false
   return userLocked
 }
 export const resetLoginLock = async (app: App, userId: string) => {

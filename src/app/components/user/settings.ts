@@ -16,6 +16,7 @@ export const setSetting = async (
 ) => {
   // Sanitize and validate input
   if (!validateHelper.isString(settingKey)) throw Error("INVALID_INPUT")
+  if (!validateHelper.isAdvancedData(settingValue)) throw Error("INVALID_INPUT")
   // Change Setting
   await app.db.execute(queries.user.setUserSetting(), [
     cryptoHelper.createGuid(),
@@ -30,6 +31,9 @@ export const setSettings = async (
   userId: string,
   settings: Array<{ settingKey: string; settingValue: AdvancedData }>
 ) => {
+  // Sanitize and validate input
+  if (!validateHelper.isArray(settings)) throw Error("INVALID_INPUT")
+  // Set settings
   await Promise.all(
     settings.map(async setting => {
       return setSetting(app, userId, setting.settingKey, setting.settingValue)

@@ -49,6 +49,9 @@ export const createWithAppleIdentifier = async (
   if (userExists) throw Error("EMAIL_IN_USE")
   // Create user
   const userId = createUserId()
-  await app.db.execute(queries.user.createUser(), [userId, appleIdentifier])
+  await app.db.execute(queries.user.createUserWithAppleIdentifier(), [
+    userId,
+    appleIdentifier
+  ])
   return userId
 }

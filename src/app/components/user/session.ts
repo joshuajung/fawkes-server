@@ -46,7 +46,7 @@ export const logInWithEmail = async (
     throw Error("USER_HAS_NO_PASSWORD")
   // Check if password is incorrect
   if (
-    await passwordComponent.verifyUserPassword(app, userRecord.id, password)
+    await !passwordComponent.verifyUserPassword(app, userRecord.id, password)
   ) {
     // Increase number of failed login attempts
     await passwordComponent.increaseNumberOfFailedLoginAttempts(
@@ -73,7 +73,7 @@ export const logInWithAppleIdentifier = async (
   appleIdentifier: string
 ) => {
   // Sanitize and validate input
-  if (!validateHelper.isString(appleIdentifier)) throw Error("INVALID_INPUT")
+  if (!validateHelper.isGuid(appleIdentifier)) throw Error("INVALID_INPUT")
   // Check if user exists
   // Get record
   const userRecord = await findComponent.findByAppleIdentifier(
@@ -92,7 +92,7 @@ export const createUserOrLogInWithAppleIdentifier = async (
   appleIdentifier: string
 ) => {
   // Sanitize and validate input
-  if (!validateHelper.isString(appleIdentifier)) throw Error("INVALID_INPUT")
+  if (!validateHelper.isGuid(appleIdentifier)) throw Error("INVALID_INPUT")
   // Exists?
   const userExists = await existsComponent.appleIdentifierExists(
     app,
@@ -112,7 +112,7 @@ export const logInWithToken = async (app: App, token: string) => {
   const userRecord = await findComponent.findByLoginToken(app, token)
   if (!userRecord) throw Error("USER_DOES_NOT_EXIST")
   await app.db.execute(queries.user.setLoginToken(), [null, userRecord.id])
-  return await startSession(app, userRecord)
+  return await startSession(app, userRecord.id)
 }
 export const sendLoginLink = async (
   app: App,
@@ -124,7 +124,8 @@ export const sendLoginLink = async (
   if (!validateHelper.isString(loginLinkBaseUrl)) throw Error("INVALID_INPUT")
   // Get User ID by email
   const userRecord = await findComponent.findByEmail(app, email)
-  if (!userRecord) throw Error("USER_DOES_NOT_EXIST")
+  // If user does not exist, don't report this to the user.
+  if (!userRecord) return
   const userId = userRecord.id
   // Generate Login Token
   const loginToken = await setLoginToken(app, userId)

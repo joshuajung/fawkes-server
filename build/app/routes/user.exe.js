@@ -12,7 +12,6 @@ const userCreateComponent = require("../components/user/create");
 const userExistsComponent = require("../components/user/exists");
 const userPasswordComponent = require("../components/user/password");
 const userSessionComponent = require("../components/user/session");
-const userSettingsComponent = require("../components/user/settings");
 const userFindComponent = require("../components/user/find");
 function setupRoutes(app) {
     app.post("/user/createWithEmail", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
@@ -32,7 +31,7 @@ function setupRoutes(app) {
     }));
     app.post("/user/exists", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
-            const result = yield userExistsComponent.emailExists(app, req.body["email"]);
+            const result = yield userExistsComponent.emailExists(app, req.body["email"].value);
             res.status(200).send({ code: "CHECK_SUCCESSFUL", userExists: result });
         }
         catch (error) {
@@ -53,6 +52,15 @@ function setupRoutes(app) {
             next(error);
         }
     }));
+    app.post("/user/sendLoginLink", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield userSessionComponent.sendLoginLink(app, req.body["email"].value, req.body["loginLinkBaseUrl"]);
+            res.status(200).send({ code: "LOGIN_LINK_SENT" });
+        }
+        catch (error) {
+            next(error);
+        }
+    }));
     app.post("/user/logInWithToken", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
             const loginResult = yield userSessionComponent.logInWithToken(app, req.body["token"]);
@@ -67,10 +75,15 @@ function setupRoutes(app) {
             next(error);
         }
     }));
-    app.post("/user/sendLoginLink", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    app.post("/user/createOrLogInWithAppleIdentifier", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
-            yield userSessionComponent.sendLoginLink(app, req.body["email"].value, req.body["loginLinkBaseUrl"]);
-            res.status(200).send({ code: "LOGIN_LINK_SENT" });
+            const loginResult = yield userSessionComponent.createUserOrLogInWithAppleIdentifier(app, req.body["appleIdentifier"]);
+            const userInfo = yield userFindComponent.getRichUserRecordById(app, loginResult.userId);
+            res.status(200).send({
+                code: "LOGIN_SUCCESSFUL",
+                accessToken: loginResult.accessToken,
+                userInfo: userInfo
+            });
         }
         catch (error) {
             next(error);
@@ -116,29 +129,6 @@ function setupRoutes(app) {
         try {
             yield userPasswordComponent.sendResetPasswordLink(app, req.body["email"].value, req.body["resetPasswordLinkBaseUrl"]);
             res.status(200).send({ code: "RESET_PASSWORD_LINK_SENT" });
-        }
-        catch (error) {
-            next(error);
-        }
-    }));
-    app.post("/user/setUserSetting", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield userSettingsComponent.setSettings(app, req.userInfo.userId, req.body);
-            const settings = yield userSettingsComponent.settings(app, req.userInfo.userId);
-            res
-                .status(200)
-                .send({ code: "USER_SETTINGS_SET", userSettings: settings });
-        }
-        catch (error) {
-            next(error);
-        }
-    }));
-    app.get("/user/userSettings", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        try {
-            const settings = yield userSettingsComponent.settings(app, req.userInfo.userId);
-            res
-                .status(200)
-                .send({ code: "USER_SETTINGS_ATTACHED", userSettings: settings });
         }
         catch (error) {
             next(error);

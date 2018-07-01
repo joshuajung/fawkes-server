@@ -6,7 +6,7 @@ import * as userCreateComponent from "../components/user/create"
 import * as userExistsComponent from "../components/user/exists"
 import * as userPasswordComponent from "../components/user/password"
 import * as userSessionComponent from "../components/user/session"
-import * as userSettingsComponent from "../components/user/settings"
+// import * as userSettingsComponent from "../components/user/settings"
 import * as userFindComponent from "../components/user/find"
 
 export function setupRoutes(app: types.App): void {
@@ -44,7 +44,7 @@ export function setupRoutes(app: types.App): void {
       try {
         const result = await userExistsComponent.emailExists(
           app,
-          req.body["email"]
+          req.body["email"].value
         )
         res.status(200).send({ code: "CHECK_SUCCESSFUL", userExists: result })
       } catch (error) {
@@ -76,6 +76,21 @@ export function setupRoutes(app: types.App): void {
     }
   )
   app.post(
+    "/user/sendLoginLink",
+    async (req: types.Request, res: types.Response, next: Function) => {
+      try {
+        await userSessionComponent.sendLoginLink(
+          app,
+          req.body["email"].value,
+          req.body["loginLinkBaseUrl"]
+        )
+        res.status(200).send({ code: "LOGIN_LINK_SENT" })
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+  app.post(
     "/user/logInWithToken",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
@@ -98,15 +113,22 @@ export function setupRoutes(app: types.App): void {
     }
   )
   app.post(
-    "/user/sendLoginLink",
+    "/user/createOrLogInWithAppleIdentifier",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
-        await userSessionComponent.sendLoginLink(
+        const loginResult = await userSessionComponent.createUserOrLogInWithAppleIdentifier(
           app,
-          req.body["email"].value,
-          req.body["loginLinkBaseUrl"]
+          req.body["appleIdentifier"]
         )
-        res.status(200).send({ code: "LOGIN_LINK_SENT" })
+        const userInfo = await userFindComponent.getRichUserRecordById(
+          app,
+          loginResult.userId
+        )
+        res.status(200).send({
+          code: "LOGIN_SUCCESSFUL",
+          accessToken: loginResult.accessToken,
+          userInfo: userInfo
+        })
       } catch (error) {
         next(error)
       }
@@ -180,8 +202,9 @@ export function setupRoutes(app: types.App): void {
       }
     }
   )
+  /*
   app.post(
-    "/user/setUserSetting",
+    "/user/setUserSettings",
     async (req: types.Request, res: types.Response, next: Function) => {
       try {
         await userSettingsComponent.setSettings(
@@ -216,7 +239,7 @@ export function setupRoutes(app: types.App): void {
         next(error)
       }
     }
-  )
+  )*/
   app.get(
     "/user/info",
     async (req: types.Request, res: types.Response, next: Function) => {

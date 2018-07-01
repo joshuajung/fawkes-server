@@ -12,13 +12,6 @@ export function setupRoutes(app: types.App): void {
     }
   )
   app.post(
-    "/user/addNativeLogin",
-    async (req: types.Request, res: types.Response, next: Function) => {
-      req.accessGranted = true
-      next()
-    }
-  )
-  app.post(
     "/user/exists",
     async (req: types.Request, res: types.Response, next: Function) => {
       req.accessGranted = true
@@ -41,6 +34,13 @@ export function setupRoutes(app: types.App): void {
   )
   app.post(
     "/user/sendLoginLink",
+    async (req: types.Request, res: types.Response, next: Function) => {
+      req.accessGranted = true
+      next()
+    }
+  )
+  app.post(
+    "/user/createOrLogInWithAppleIdentifier",
     async (req: types.Request, res: types.Response, next: Function) => {
       req.accessGranted = true
       next()
@@ -80,7 +80,7 @@ export function setupRoutes(app: types.App): void {
       req.accessGranted = true
       next()
     }
-  )
+  ) /*
   app.post(
     "/user/setUserSettings",
     async (req: types.Request, res: types.Response, next: Function) => {
@@ -94,7 +94,7 @@ export function setupRoutes(app: types.App): void {
       req.accessGranted = !!req.userIsLoggedIn
       next()
     }
-  )
+  )*/
   app.get(
     "/user/info",
     async (req: types.Request, res: types.Response, next: Function) => {

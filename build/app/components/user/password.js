@@ -129,8 +129,8 @@ exports.lockUserIfRequired = (app, userId) => __awaiter(this, void 0, void 0, fu
     const userRecord = yield findComponent.findById(app, userId);
     if (!userRecord)
         throw Error("USER_DOES_NOT_EXIST");
-    const lockResult = yield app.db.execute(queries_1.default.user.lockUserLoginByUserId(app.module.user.loginLockTimeout), [userRecord.id, app.module.user.failedLoginAttemptsUntilLock])[0];
-    const userLocked = lockResult.affectedRows > 0 ? true : false;
+    const lockResult = yield app.db.execute(queries_1.default.user.lockUserLoginByUserId(app.module.user.loginLockTimeout), [userRecord.id, app.module.user.failedLoginAttemptsUntilLock]);
+    const userLocked = lockResult[0].affectedRows > 0 ? true : false;
     return userLocked;
 });
 exports.resetLoginLock = (app, userId) => __awaiter(this, void 0, void 0, function* () {

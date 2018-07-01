@@ -41,7 +41,7 @@ exports.logInWithEmail = (app, email, password) => __awaiter(this, void 0, void 
         throw Error("LOGIN_LOCKED");
     if (!(yield passwordComponent.userHasPassword(app, userRecord.id)))
         throw Error("USER_HAS_NO_PASSWORD");
-    if (yield passwordComponent.verifyUserPassword(app, userRecord.id, password)) {
+    if (yield !passwordComponent.verifyUserPassword(app, userRecord.id, password)) {
         yield passwordComponent.increaseNumberOfFailedLoginAttempts(app, userRecord.id);
         const userLocked = yield passwordComponent.lockUserIfRequired(app, userRecord.id);
         if (userLocked) {
@@ -54,7 +54,7 @@ exports.logInWithEmail = (app, email, password) => __awaiter(this, void 0, void 
     return yield exports.startSession(app, userRecord.id);
 });
 exports.logInWithAppleIdentifier = (app, appleIdentifier) => __awaiter(this, void 0, void 0, function* () {
-    if (!validateHelper.isString(appleIdentifier))
+    if (!validateHelper.isGuid(appleIdentifier))
         throw Error("INVALID_INPUT");
     const userRecord = yield findComponent.findByAppleIdentifier(app, appleIdentifier);
     if (!userRecord)
@@ -65,7 +65,7 @@ exports.logInWithAppleIdentifier = (app, appleIdentifier) => __awaiter(this, voi
     return yield exports.startSession(app, userRecord.id);
 });
 exports.createUserOrLogInWithAppleIdentifier = (app, appleIdentifier) => __awaiter(this, void 0, void 0, function* () {
-    if (!validateHelper.isString(appleIdentifier))
+    if (!validateHelper.isGuid(appleIdentifier))
         throw Error("INVALID_INPUT");
     const userExists = yield existsComponent.appleIdentifierExists(app, appleIdentifier);
     if (!userExists) {
@@ -80,7 +80,7 @@ exports.logInWithToken = (app, token) => __awaiter(this, void 0, void 0, functio
     if (!userRecord)
         throw Error("USER_DOES_NOT_EXIST");
     yield app.db.execute(queries_1.default.user.setLoginToken(), [null, userRecord.id]);
-    return yield exports.startSession(app, userRecord);
+    return yield exports.startSession(app, userRecord.id);
 });
 exports.sendLoginLink = (app, email = null, loginLinkBaseUrl) => __awaiter(this, void 0, void 0, function* () {
     if (!validateHelper.isEmail(email))
@@ -89,7 +89,7 @@ exports.sendLoginLink = (app, email = null, loginLinkBaseUrl) => __awaiter(this,
         throw Error("INVALID_INPUT");
     const userRecord = yield findComponent.findByEmail(app, email);
     if (!userRecord)
-        throw Error("USER_DOES_NOT_EXIST");
+        return;
     const userId = userRecord.id;
     const loginToken = yield exports.setLoginToken(app, userId);
     const mail = {

@@ -13,10 +13,6 @@ function setupRoutes(app) {
         req.accessGranted = true;
         next();
     }));
-    app.post("/user/addNativeLogin", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        req.accessGranted = true;
-        next();
-    }));
     app.post("/user/exists", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         req.accessGranted = true;
         next();
@@ -30,6 +26,10 @@ function setupRoutes(app) {
         next();
     }));
     app.post("/user/sendLoginLink", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+        req.accessGranted = true;
+        next();
+    }));
+    app.post("/user/createOrLogInWithAppleIdentifier", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         req.accessGranted = true;
         next();
     }));
@@ -51,14 +51,6 @@ function setupRoutes(app) {
     }));
     app.post("/user/sendResetPasswordLink", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         req.accessGranted = true;
-        next();
-    }));
-    app.post("/user/setUserSettings", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        req.accessGranted = !!req.userIsLoggedIn;
-        next();
-    }));
-    app.get("/user/userSettings", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        req.accessGranted = !!req.userIsLoggedIn;
         next();
     }));
     app.get("/user/info", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
