@@ -28,7 +28,7 @@ class Scheduler {
         }, 5000);
     }
     runRequiredJobs() {
-        this.jobs.forEach(this.runJobIfRequired);
+        this.jobs.forEach(job => this.runJobIfRequired(job));
     }
     runJobIfRequired(job) {
         const jobEverRan = job.lastStart !== null;
