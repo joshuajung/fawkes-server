@@ -18,10 +18,16 @@ export interface Module {
     };
     server: {
         baseUrl: string;
+        rateLimit: {
+            enabled: boolean;
+            timeFrame: number;
+            numberOfRequests: number;
+        };
     };
     environment: {
         testing: boolean;
         logErrors: boolean;
+        enableTrustProxy: boolean;
     };
     user: {
         registrationOpen: boolean;

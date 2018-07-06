@@ -16,6 +16,7 @@ const refreshSession_1 = require("./middleware/refreshSession");
 const addUserInformation_1 = require("./middleware/addUserInformation");
 const gatekeeper_1 = require("./middleware/gatekeeper");
 const AdvancedData = require("./middleware/advancedData");
+const rateLimiter_1 = require("./middleware/rateLimiter");
 const createPool_1 = require("./database/createPool");
 const moduleLoader_1 = require("./helpers/moduleLoader");
 const scheduler_1 = require("./helpers/scheduler");
@@ -23,10 +24,13 @@ const socket_1 = require("./helpers/socket");
 function App(module) {
     const app = Express();
     app.module = moduleLoader_1.default(module);
+    if (app.module.environment.enableTrustProxy)
+        app.enable("trust proxy");
     app.db = createPool_1.default(app.module.database);
     app.mailer = nodemailer.createTransport(app.module.mailer.transporterConfiguration);
     app.use(Helmet());
     app.use(cors());
+    app.use(rateLimiter_1.default(app));
     app.use(readRequestAuthTokens_1.default(app));
     app.use(refreshSession_1.default(app));
     app.use(addUserInformation_1.default(app));

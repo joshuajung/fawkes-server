@@ -19,6 +19,7 @@ import RefreshSession from "./middleware/refreshSession"
 import AddUserInformation from "./middleware/addUserInformation"
 import gatekeeper from "./middleware/gatekeeper"
 import * as AdvancedData from "./middleware/advancedData"
+import RateLimiter from "./middleware/rateLimiter"
 // Interfaces
 import createDatabasePool from "./database/createPool"
 // Helpers
@@ -32,6 +33,10 @@ export default function App(module: types.Module): types.App {
 
   // Load module
   app.module = moduleLoader(module)
+
+  // Enable trust proxy, if required
+  if (app.module.environment.enableTrustProxy) app.enable("trust proxy")
+
   // Connect to database
   app.db = createDatabasePool(app.module.database)
 
@@ -43,6 +48,7 @@ export default function App(module: types.Module): types.App {
   // Pre-router middleware
   app.use(Helmet())
   app.use(cors())
+  app.use(RateLimiter(app))
   app.use(ReadRequestAuthTokens(app))
   app.use(RefreshSession(app))
   app.use(AddUserInformation(app))

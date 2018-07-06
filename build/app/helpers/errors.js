@@ -65,6 +65,11 @@ const errors = {
         code: "INVALID_INPUT",
         publicCode: "INVALID_INPUT",
         httpStatus: 400
+    },
+    RATE_LIMIT_EXCEEDED: {
+        code: "RATE_LIMIT_EXCEEDED",
+        publicCode: "RATE_LIMIT_EXCEEDED",
+        httpStatus: 429
     }
 };
 exports.default = errors;

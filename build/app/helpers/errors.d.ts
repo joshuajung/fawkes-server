@@ -64,5 +64,10 @@ declare const errors: {
         publicCode: string;
         httpStatus: number;
     };
+    RATE_LIMIT_EXCEEDED: {
+        code: string;
+        publicCode: string;
+        httpStatus: number;
+    };
 };
 export default errors;
