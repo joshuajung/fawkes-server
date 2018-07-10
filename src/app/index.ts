@@ -4,6 +4,7 @@ import * as bodyParser from "body-parser"
 import * as Helmet from "helmet"
 import * as nodemailer from "nodemailer"
 import * as cors from "cors"
+import * as compression from "compression"
 import "source-map-support/register"
 
 // Internal imports
@@ -48,6 +49,7 @@ export default function App(module: types.Module): types.App {
   // Pre-router middleware
   app.use(Helmet())
   app.use(cors())
+  app.use(compression())
   app.use(RateLimiter(app))
   app.use(ReadRequestAuthTokens(app))
   app.use(RefreshSession(app))

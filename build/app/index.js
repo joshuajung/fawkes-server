@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const Helmet = require("helmet");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
+const compression = require("compression");
 require("source-map-support/register");
 const routes = require("./routes");
 const logError_1 = require("./middleware/logError");
@@ -30,6 +31,7 @@ function App(module) {
     app.mailer = nodemailer.createTransport(app.module.mailer.transporterConfiguration);
     app.use(Helmet());
     app.use(cors());
+    app.use(compression());
     app.use(rateLimiter_1.default(app));
     app.use(readRequestAuthTokens_1.default(app));
     app.use(refreshSession_1.default(app));
